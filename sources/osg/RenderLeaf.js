@@ -46,7 +46,7 @@ define( [
         drawGeometry: ( function () {
 
             var tempMatrice = Matrix.create();
-            var modelViewUniform, viewUniform, modelWorldUniform, projectionUniform, normalUniform, program;
+            var modelViewUniform, viewUniform, modelWorldUniform, projectionUniform, normalUniform, program, prevModelViewUniform, prevProjectionUniform;
 
             return function ( state ) {
 
@@ -58,7 +58,10 @@ define( [
                 modelWorldUniform = program._uniformsCache[ state.modelWorldMatrix.name ];
                 viewUniform = program._uniformsCache[ state.viewMatrix.name ];
                 projectionUniform = program._uniformsCache[ state.projectionMatrix.name ];
-                normalUniform = program._uniformsCache[ state.normalMatrix.name ];
+                normalUniform = program._uniformsCache[ state.normalMatrix.name ]; // reproj
+                prevModelViewUniform = program._uniformsCache[ state.prevModelViewMatrix.name ];
+                prevProjectionUniform = program._uniformsCache[ state.prevProjectionMatrix.name ];
+
 
                 if ( modelViewUniform !== undefined ) {
                     state.modelViewMatrix.set( this._modelView );
@@ -95,6 +98,17 @@ define( [
                     Matrix.transpose( normal, normal );
                     state.normalMatrix.set( normal );
                     state.normalMatrix.apply( gl, normalUniform );
+                }
+
+                // reproj
+                if ( prevModelViewUniform !== undefined ) {
+                    state.prevModelViewMatrix.set( this._previousModelView );
+                    state.prevModelViewMatrix.apply( gl, prevModelViewUniform );
+                }
+
+                if ( prevProjectionUniform !== undefined ) {
+                    state.prevProjectionMatrix.set( this._previousProjection );
+                    state.prevProjectionMatrix.apply( gl, prevProjectionUniform );
                 }
 
                 this._geometry.drawImplementation( state );

@@ -37,6 +37,10 @@ define( [
         this.projectionMatrix = Uniform.createMatrix4( Matrix.create(), 'ProjectionMatrix' );
         this.normalMatrix = Uniform.createMatrix4( Matrix.create(), 'NormalMatrix' );
 
+        //reproj
+        this.prevModelViewMatrix = Uniform.createMatrix4( Matrix.create(), 'PrevModelViewMatrix' );
+        this.prevProjectionMatrix = Uniform.createMatrix4( Matrix.create(), 'PrevProjectionMatrix' );
+
         // track uniform for color array enabled
         var arrayColorEnable = Stack.create();
         arrayColorEnable.globalDefault = Uniform.createFloat1( 0.0, 'ArrayColorEnabled' );
