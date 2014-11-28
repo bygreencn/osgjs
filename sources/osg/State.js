@@ -107,7 +107,7 @@ define( [
             }
         },
 
-        getStateSetStackSize: function() {
+        getStateSetStackSize: function () {
             return this.stateSets.length;
         },
 
