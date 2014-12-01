@@ -605,20 +605,6 @@ define( [
 
     CullVisitor.prototype[ Geometry.typeID ] = function ( node ) {
 
-        var hash = '';
-        this.getNodePath().forEach( function ( a ) {
-            hash += a.getInstanceID() + '';
-        } );
-        if ( !node._history ) {
-            node._history = {};
-        }
-        if ( !node._history[ hash ] ) {
-            node._history[ hash ] = {};
-            node._history[ hash ][ 'view' ] = Matrix.create();
-            node._history[ hash ][ 'prevView' ] = Matrix.create();
-            node._history[ hash ][ 'proj' ] = Matrix.create();
-            node._history[ hash ][ 'prevProj' ] = Matrix.create();
-        }
 
         var modelview = this.getCurrentModelViewMatrix();
         var bb = node.getBoundingBox();
