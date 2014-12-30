@@ -10,7 +10,7 @@ function getSSAA() {
 
     var effect = {
 
-        name: 'Temporal Static Anti-Aliasing :)',
+        name: 'SSAA ∞',
         needCommonCube: true,
 
         getShaderProgram: function(vs, ps, defines) {

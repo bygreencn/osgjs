@@ -7,10 +7,15 @@ var osgUtil = window.osgUtil;;
 var osgShader = window.osgShader;
 
 function getFxaa() {
+    /*
+        var scene = commonScene( osg.Camera.PRE_RENDER, model, false );
+        var node = scene[ 0 ];
+        var texture = scene[ 1 ];
+        var camera = scene[ 2 ];
+    */
     var effect = {
         name: 'FXAA',
         needCommonCube: true,
-
 
         buildComposer: function ( sceneTexture, finalTexture ) {
 

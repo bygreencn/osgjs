@@ -1,11 +1,14 @@
+'use strict';
+
 var TemporalAttribute;
-var TemoralNode;
+var TemporalNode;
 
 ( function () {
 
     var osgShader = window.OSG.osgShader;
     var osg = window.OSG.osg;
     var shaderNode = osgShader.node;
+    var factory = osgShader.nodeFactory;
 
     TemporalAttribute = function () {
         osg.StateAttribute.call( this );
@@ -52,30 +55,33 @@ var TemoralNode;
 
 
     // this node will call a function temporal in the shader
-    TemporalNode = function ( output, input, enable ) {
+    TemporalNode = function () {
         shaderNode.BaseOperator.apply( this, arguments );
-        this._input = input;
-        this._enable = enable;
-        this._output = output;
     };
 
     TemporalNode.prototype = osg.objectInherit( shaderNode.BaseOperator.prototype, {
+
         type: 'Temporal',
+        validInputs: [ 'enable', 'color' ],
+        validOutputs: [ 'color' ],
 
         // it's a global declaration
         // you can make your include here or your global variable
         globalFunctionDeclaration: function () {
-            return '#pragma include "temporal.glsl"';
+            return '#pragma include "ssaa_node"';
         },
 
         // call the glsl function with input/output of the node
         computeFragment: function () {
             return osgShader.utils.callFunction( 'temporal', undefined, [
-                this._enable,
-                this._input,
-                this._output
+                this._inputs.enable,
+                this._inputs.color,
+                this._outputs.color
             ] );
         }
+
     } );
+
+    factory.registerNode( 'Temporal', TemporalNode );
 
 } )();

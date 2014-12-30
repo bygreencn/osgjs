@@ -29,7 +29,7 @@ define( [
         _shadersText: {},
         _shadersList: {},
         _globalDefaultDefines: '',
-        _globalDefaultprecision: '#ifdef GL_FRAGMENT_PRECISION_HIGH\n precision highp float;\n #else\n precision mediump float;\n#endif',
+        _globalDefaultprecision: '#ifdef GL_FRAGMENT_PRECISION_HIGH\n precision highp float;\nprecision highp int;\n #else\n precision mediump float;\nprecision mediump int\n#endif',
         _debugLines: false,
         _includeR: /#pragma include "([^"]+)"/g,
         _defineR: /#define\s+([a-zA-Z_0-9]+)\s+(.*)/,
