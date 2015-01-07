@@ -263,5 +263,8 @@ define( [
     } ), 'osgShadow', 'ShadowedScene' );
     MACROUTILS.setTypeID( ShadowedScene );
 
+    // same code like Node
+    CullVisitor.prototype[ ShadowedScene.typeID ] = CullVisitor.prototype[ Node.typeID ];
+
     return ShadowedScene;
 } );

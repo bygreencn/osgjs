@@ -710,7 +710,8 @@ define( [
 
 
             if ( this._texture ) {
-                this._texture.releaseGLObjects();
+                // fail as we don't have a state.
+                //this._texture.releaseGLObjects();
                 this._texture = undefined;
             }
         }
