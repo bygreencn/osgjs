@@ -31,7 +31,7 @@
              'shadowstable': 'World Position',
              'shadowproj': 'fov',
              'fov': 50,
-
+             'pcfKernelSize': '4Tap',
              'exponent': 80.0,
              'exponent1': 0.33,
 
@@ -129,7 +129,7 @@
          this._previousLightType = this._config[ 'lightType' ];
          this._previousRtt = this._config[ 'debugRtt' ];
          this._previousFrustumTest = this._config[ 'frustumTest' ];
-
+         this._previousPcfKernelSize = this._config[ 'pcfKernelSize' ];
 
      };
 
@@ -339,6 +339,10 @@
 
              // controller = gui.add( this._config, 'logCamLight' );
 
+
+             var pcfFolder = gui.addFolder( 'PCF' );
+             controller = pcfFolder.add( this._config, 'pcfKernelSize', [ '4Tap', '9Tap', '16Tap', '16Band' ] );
+             controller.onChange( this.updateShadow.bind( this ) );
 
              /*
              var VSMFolder = gui.addFolder( 'Variance (VSM, EVSM)' );
@@ -685,6 +689,7 @@
                  shadowSettings._config[ 'exponent' ] = this._config[ 'exponent' ];
                  shadowSettings._config[ 'exponent1' ] = this._config[ 'exponent1' ];
                  shadowSettings._config[ 'VsmEpsilon' ] = this._config[ 'VsmEpsilon' ];
+                 shadowSettings._config[ 'pcfKernelSize' ] = this._config[ 'pcfKernelSize' ];
 
              }
 

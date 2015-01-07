@@ -260,7 +260,7 @@ define( [
         },
 
 
-    } ), 'osg', 'ShadowedScene' );
+    } ), 'osgShadow', 'ShadowedScene' );
     MACROUTILS.setTypeID( ShadowedScene );
 
     return ShadowedScene;

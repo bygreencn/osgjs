@@ -155,7 +155,7 @@ define( [
             return this.getTypeMember() + this._type;
         }
 
-    } ), 'osg', 'ShadowTexture' );
+    } ), 'osgShadow', 'ShadowTexture' );
 
     MACROUTILS.setTypeID( ShadowTexture );
 

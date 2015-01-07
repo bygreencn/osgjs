@@ -16,7 +16,7 @@ define( [
      * @class ShadowAttribute
      * @inherits StateAttribute
      */
-    var ShadowAttribute = function ( light, algoType, bias, exponent0, exponent1, vsmEpsilon, precision ) {
+    var ShadowAttribute = function ( light, algoType, bias, exponent0, exponent1, vsmEpsilon, pcfKernelSize, precision ) {
         StateAttribute.call( this );
 
 
@@ -47,6 +47,8 @@ define( [
         this._vsmEpsilon = vsmEpsilon !== undefined ? vsmEpsilon : 0.001;
         // shader compilation differnet upon texture precision
         this._precision = precision !== undefined ? precision : 'BYTE';
+        // kernel size & type for pcf
+        this._pcfKernelSize = pcfKernelSize;
 
 
     };
@@ -83,16 +85,35 @@ define( [
             this._bias = bias;
             //this.setDirty( true );
         },
+        getBias: function () {
+            return this._bias;
+        },
         setExponent0: function ( exp ) {
             this._exponent0 = exp;
             //this.setDirty( true );
+        },
+        getExponent0: function () {
+            return this._exponent0;
         },
         setExponent1: function ( exp ) {
             this._exponent1 = exp;
             //this.setDirty( true );
         },
+        getExponent1: function () {
+            return this._exponent1;
+        },
         setVsmEpsilon: function ( vsmEpsilon ) {
             this._vsmEpsilon = vsmEpsilon;
+            //this.setDirty( true );
+        },
+        getVsmEpsilon: function () {
+            return this._vsmEpsilon;
+        },
+        getPCFKernelSize: function () {
+            return this._pcfKernelSize;
+        },
+        setPCFKernelSize: function ( v ) {
+            this._pcfKernelSize = v;
             //this.setDirty( true );
         },
         setPrecision: function ( precision ) {
@@ -137,6 +158,69 @@ define( [
             return obj.uniforms[ typeMember ];
         },
 
+
+        // Here to be common between  caster and receiver
+        // (used by shadowMap and shadow node shader)
+        getDefines: function () {
+
+            var textureType = this.getPrecision();
+            var algo = this.getAlgorithm();
+            var defines = [];
+
+            var isFloat = false;
+            var isLinearFloat = false;
+
+            if ( ( typeof textureType === 'string' && textureType !== 'BYTE' ) || textureType !== Texture.UNSIGNED_BYTE ) {
+                isFloat = true;
+            }
+
+            if ( isFloat && ( ( typeof textureType === 'string' && textureType.indexOf( 'LINEAR' ) !== -1 ) || textureType === Texture.HALF_FLOAT_LINEAR || textureType === Texture.FLOAT_LINEAR ) ) {
+                isLinearFloat = true;
+            }
+
+
+            if ( algo === 'ESM' ) {
+                defines.push( '#define _ESM' );
+            } else if ( algo === 'NONE' ) {
+                defines.push( '#define _NONE' );
+            } else if ( algo === 'PCF' ) {
+                defines.push( '#define _PCF' );
+                var pcf = this.getPCFKernelSize();
+                switch ( pcf ) {
+                case '16Band':
+                    defines.push( '#define _PCF_BAND' );
+                    defines.push( '#define _PCFx16' );
+                    break;
+                case '9Tap':
+                    defines.push( '#define _PCF_TAP' );
+                    defines.push( '#define _PCFx9' );
+                    break;
+                case '16Tap':
+                    defines.push( '#define _PCF_TAP' );
+                    defines.push( '#define _PCFx25' );
+                    break;
+                default:
+                case '4Tap':
+                    defines.push( '#define _PCF_TAP' );
+                    defines.push( '#define _PCFx4' );
+                    break;
+                }
+            } else if ( algo === 'VSM' ) {
+                defines.push( '#define _VSM' );
+            } else if ( algo === 'EVSM' ) {
+                defines.push( '#define _EVSM' );
+            }
+
+            if ( isFloat ) {
+                defines.push( '#define  _FLOATTEX' );
+            }
+            if ( isLinearFloat ) {
+                defines.push( '#define  _FLOATLINEAR' );
+            }
+
+            return defines;
+        },
+
         apply: function ( /*state*/) {
 
             var uniformMap = this.getOrCreateUniforms();
@@ -150,10 +234,10 @@ define( [
         },
 
         getHash: function () {
-            return this.getTypeMember() + this.getAlgorithm();
+            return this.getTypeMember() + this.getAlgorithm() + this.getPCFKernelSize();
         }
 
-    } ), 'osg', 'ShadowAttribute' );
+    } ), 'osgShadow', 'ShadowAttribute' );
 
     MACROUTILS.setTypeID( ShadowAttribute );
 

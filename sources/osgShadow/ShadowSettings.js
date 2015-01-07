@@ -37,21 +37,21 @@ define( [
 
         this._config = {
             'texturesize': 1024,
-            'shadow': 'ESM',
-            'texturetype': 'Force8bits',
+            'shadow': 'PCF',
+            'texturetype': 'BYTE',
             'lightnum': 1,
             'bias': 0.005,
             'VsmEpsilon': 0.0008,
+            'pcfKernelSize': '4Tap', //'4Tap', '9Tap', '16Tap', '16Band'
             'supersample': 0,
             'blur': false,
             'blurKernelSize': 4.0,
             'blurTextureSize': 256,
-            'model': 'ogre',
             'shadowstable': 'World Position',
             'shadowproj': 'fov',
             'fov': 50,
             'exponent': 40,
-            'exponent1': 10.0,
+            'exponent1': 10.0
         };
         this._textureType = 'BYTE';
         this._textureFormat = Texture.RGBA;
@@ -227,7 +227,7 @@ define( [
             return this._config[ idx ];
         }
 
-    } ), 'osg', 'ShadowSettings' );
+    } ), 'osgShadow', 'ShadowSettings' );
     MACROUTILS.setTypeID( ShadowSettings );
 
     return ShadowSettings;

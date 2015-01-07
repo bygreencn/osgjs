@@ -102,49 +102,6 @@ define( [
             cache[ hash ] = program;
             return program;
         },
-
-        // TODO: remove either here or in node shadow: code repetition ?
-        // ... otherwise caster and receiver doesn't get same defines
-        // if any change done here and not overthere
-        getDefines: function () {
-
-            var textureType = this._shadowAttribute.getPrecision();
-            var algo = this._shadowAttribute.getAlgorithm();
-            var defines = [];
-
-            var isFloat = false;
-            var isLinearFloat = false;
-
-            if ( ( typeof textureType === 'string' && textureType !== 'BYTE' ) || textureType !== Texture.UNSIGNED_BYTE ) {
-                isFloat = true;
-            }
-
-            if ( isFloat && ( ( typeof textureType === 'string' && textureType.indexOf( 'LINEAR' ) !== -1 ) || textureType === Texture.HALF_FLOAT_LINEAR || textureType === Texture.FLOAT_LINEAR ) ) {
-                isLinearFloat = true;
-            }
-
-
-            if ( algo === 'ESM' ) {
-                defines.push( '#define _ESM' );
-            } else if ( algo === 'NONE' ) {
-                defines.push( '#define _NONE' );
-            } else if ( algo === 'PCF' ) {
-                defines.push( '#define _PCF' );
-            } else if ( algo === 'VSM' ) {
-                defines.push( '#define _VSM' );
-            } else if ( algo === 'EVSM' ) {
-                defines.push( '#define _EVSM' );
-            }
-
-            if ( isFloat ) {
-                defines.push( '#define  _FLOATTEX' );
-            }
-            if ( isLinearFloat ) {
-                defines.push( '#define  _FLOATLINEAR' );
-            }
-
-            return defines;
-        },
         // computes a shader upon user choice
         // of shadow algorithms
         // shader file, define but texture type/format
@@ -154,7 +111,7 @@ define( [
             var shadowSettings = this._shadowSettings || this.getShadowedScene().getShadowSettings();
 
             var textureFormat = shadowSettings.getTextureFormat();
-            var defines = this.getDefines();
+            var defines = this._shadowAttribute.getDefines();
 
             /*
             var floatTexSupp = textureType !== 'BYTE';
@@ -247,6 +204,12 @@ define( [
         setVsmEpsilon: function ( value ) {
             this._shadowAttribute.setVsmEpsilon( value );
         },
+        getPCFKernelSize: function () {
+            return this._shadowAttribute.getPCFKernelSize();
+        },
+        setPCFKernelSize: function ( value ) {
+            this._shadowAttribute.setPCFKernelSize( value );
+        },
 
         /** initialize the ShadowedScene and local cached data structures.*/
         init: function () {
@@ -272,8 +235,9 @@ define( [
             var exponent0 = shadowSettings._config[ 'exponent' ];
             var exponent1 = shadowSettings._config[ 'exponent1' ];
             var vsmEpsilon = shadowSettings._config[ 'VsmEpsilon' ];
+            var pcfKernelSize = shadowSettings._config[ 'pcfKernelSize' ];
 
-            this._shadowAttribute = new ShadowAttribute( light, this._algorithm, bias, exponent0, exponent1, vsmEpsilon, this._texturePrecisionFormat );
+            this._shadowAttribute = new ShadowAttribute( light, this._algorithm, bias, exponent0, exponent1, vsmEpsilon, pcfKernelSize, this._texturePrecisionFormat );
             this._receivingStateset = this._shadowedScene.getReceivingStateSet();
 
             // First init
@@ -682,7 +646,8 @@ define( [
             if ( exponent1 ) this.setExponent1( exponent1 );
             var vsmEpsilon = shadowSettings._config[ 'VsmEpsilon' ];
             if ( vsmEpsilon ) this.setVsmEpsilon( vsmEpsilon );
-
+            var pcfKernelSize = shadowSettings._config[ 'pcfKernelSize' ];
+            if ( pcfKernelSize ) this.setPCFKernelSize( pcfKernelSize );
         },
 
         cullShadowCastingScene: function ( cullVisitor ) {
@@ -750,7 +715,7 @@ define( [
             }
         }
 
-    } ), 'osg', 'ShadowMap' );
+    } ), 'osgShadow', 'ShadowMap' );
 
     MACROUTILS.setTypeID( ShadowMap );
 
